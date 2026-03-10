@@ -1,3 +1,5 @@
+![NovaPop 1:1 example output](local-assets/screenshots/nova-1-1.png)
+
 # Creative Pipeline AI
 
 A local-first creative automation pipeline for generating localized, multi-format advertising assets at scale. Given a structured campaign brief, the pipeline produces campaign images (and videos) across multiple products, target markets, languages, and aspect ratios — using your choice of AI image/video model — and organizes all outputs by brand, campaign, product, and size.
@@ -37,76 +39,31 @@ Two built-in brand profiles (NovaPop and Iron & Oak Hardware) are pre-loaded wit
 
 ## Architecture
 
-```mermaid
-flowchart TD
-  subgraph browser [Browser]
-    UI[React_Vite_UI]
-    LocalState[localStorage_IndexedDB]
-    FSA[File_System_Access_API]
-    UI <--> LocalState
-    UI --> FSA
-  end
+![Architecture diagram](local-assets/diagrams/architecture-diagram.png)
 
-  subgraph server [Node_Express_API :8787]
-    API[api_routes]
-    Compliance[compliance_engine]
-    PromptBuilder[prompt_builder]
-    Sharp[sharp_image_normalizer]
-    API --> Compliance
-    API --> PromptBuilder
-    API --> Sharp
-  end
-
-  subgraph ai [AI_Providers]
-    Flux[Flux_1_Dev_LiteLLM]
-    OpenAI[OpenAI_gpt-image-1]
-    Gemini[Gemini_Flash_Pro]
-    LTX[LTX-2_Turbo_HuggingFace]
-    Veo[Veo_3.1_Google_LRO]
-  end
-
-  subgraph storage [Storage]
-    LocalAssets[local-assets_folder]
-    S3[AWS_S3_bucket]
-  end
-
-  UI -->|POST /api/generate-campaign| API
-  UI -->|POST /api/generate-video| API
-  UI -->|POST /api/translate-text| API
-  UI -->|GET /api/media-library| API
-  API --> Flux
-  API --> OpenAI
-  API --> Gemini
-  API --> LTX
-  API --> Veo
-  API --> LocalAssets
-  API --> S3
-  LocalAssets -->|GET /assets/...| UI
-  S3 -->|public URL| UI
-```
+**Architecture:** You fill out a campaign brief in the web app (left). The local server (middle) turns that brief into a set of ad variations, sends requests to AI services to create images/videos, then saves the results either on your computer or in your cloud storage so the gallery can display and download them.
 
 **Request flow for a single image variant:**
 
-```mermaid
-sequenceDiagram
-  participant UI as Browser_UI
-  participant API as Express_API
-  participant Model as AI_Model
-  participant Store as Storage
+![Single image generation flow](local-assets/diagrams/image-generation.png)
 
-  UI->>API: POST /api/generate-campaign (brief + product + ratio + model)
-  API->>API: runComplianceChecks()
-  API->>API: buildPrompt()
-  API->>Model: generate / edits request
-  Model-->>API: image bytes (URL or base64)
-  API->>API: normalizeImageSize() via sharp
-  API->>Store: saveAsset() → local or S3
-  Store-->>API: public URL
-  API-->>UI: { variant }
-  UI->>UI: compositeTextOverlay() if Flux
-  UI->>UI: saveAssetLocally() via FSA (if folder selected)
-  UI->>UI: persist to localStorage manifest
-```
+**Single Image Generation:** For each size and product you request, the app does a quick safety check, writes clear instructions for the AI model, generates the creative, then resizes it to the exact ad dimensions and saves it. If you’ve chosen a local folder, it also exports a copy into your brand/campaign/product/size folders automatically.
+
+## Product Screenshots
+
+![NovaPop 16:9 example output](local-assets/screenshots/nova-16-9.png)
+
+![NovaPop 728x90 example output](local-assets/screenshots/nova-728.png)
+
+![NovaPop 300x250 example output](local-assets/screenshots/nova-350.png)
+
+![Iron & Oak 1:1 example output](local-assets/screenshots/iron-1-1.png)
+
+![Iron & Oak 16:9 example output](local-assets/screenshots/iron-16-9.png)
+
+![Brand media library](local-assets/screenshots/media-gallery.png)
+
+![Settings and API keys](local-assets/screenshots/settings.png)
 
 ---
 
