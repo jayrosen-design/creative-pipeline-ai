@@ -1,0 +1,38 @@
+brand_name: NovaPop
+campaign_id: novapop_summer_2026
+message: >
+  Hyper-realistic 3D render of a NovaPop Cherry Fizz can splashing into a pool
+  of glowing pink liquid, cyberpunk background.
+overlay_text: "Pop the vibe. NovaPop Cherry Fizz - Summer 2026"
+
+markets:
+  - US
+
+audience: Gen Z trend-setters
+
+languages:
+  - en
+
+products:
+  - id: cherry_fizz
+    name: Cherry Fizz Can
+    tagline: Pop the vibe.
+  - id: blue_burst
+    name: Blue Burst Can
+    tagline: Feel the rush.
+
+requested_ratios:
+  - "1:1"
+  - "9:16"
+  - "16:9"
+
+image_model: flux.1-dev
+output_type: image
+
+brand:
+  primary_color: "#e8368f"
+  font_family: Space Grotesk
+  logo_required: true
+  logo_safe_zone_percent: 4
+
+compliance_mode: strict

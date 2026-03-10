@@ -594,32 +594,36 @@ const CampaignBriefForm = ({ onGenerate, isGenerating, progress }: CampaignBrief
     setSelectedModel(lastImageModelRef.current || IMAGE_MODELS[0].value);
   }, [outputType, selectedModel]);
 
-  useEffect(() => {
-    if (!BUILTIN_MEDIA_BRAND_KEYS.has(activeBrand)) return;
-    if (currentMediaLibrary.length === 0) return;
+useEffect(() => {
+  if (!BUILTIN_MEDIA_BRAND_KEYS.has(activeBrand)) return;
+  if (currentMediaLibrary.length === 0) return;
 
-    const runAutoSeed = async () => {
-      for (let index = 0; index < products.length; index += 1) {
-        const product = products[index];
-        const autoSeedKey = `${activeBrand}:${product.id}`;
-        if ((product.reference_images?.length ?? 0) > 0) continue;
-        if (skippedAutoSeedRefs.current.has(autoSeedKey) || autoSeededRefs.current.has(autoSeedKey)) continue;
+  const runAutoSeed = async () => {
+    for (let index = 0; index < products.length; index += 1) {
+      const product = products[index];
+      const autoSeedKey = `${activeBrand}:${product.id}`;
 
-        const candidates = getLibraryCandidatesForProduct(product, currentMediaLibrary).slice(0, MAX_REFERENCE_IMAGE_COUNT);
-        if (candidates.length === 0) continue;
+      if ((product.reference_images?.length ?? 0) > 0) continue;
+      if (skippedAutoSeedRefs.current.has(autoSeedKey)) continue;
 
-        try {
-          const dataUrls = await Promise.all(candidates.map((item) => urlToDataUrl(item.url)));
-          addReferenceImagesToProduct(index, dataUrls);
-          autoSeededRefs.current.add(autoSeedKey);
-        } catch (error) {
-          console.warn("Failed to auto-seed media references:", error);
-        }
+      // For built-in brands, prefer only built-in folder images (not uploaded)
+      const builtinOnly = currentMediaLibrary.filter((item) => item.source === "builtin");
+      const seedPool = builtinOnly.length > 0 ? builtinOnly : currentMediaLibrary;
+
+      const candidates = getLibraryCandidatesForProduct(product, seedPool).slice(0, MAX_REFERENCE_IMAGE_COUNT);
+      if (candidates.length === 0) continue;
+
+      try {
+        const dataUrls = await Promise.all(candidates.map((item) => urlToDataUrl(item.url)));
+        addReferenceImagesToProduct(index, dataUrls);
+      } catch (error) {
+        console.warn("Failed to auto-seed media references:", error);
       }
-    };
+    }
+  };
 
-    void runAutoSeed();
-  }, [activeBrand, currentMediaLibrary, products]);
+  void runAutoSeed();
+}, [activeBrand, currentMediaLibrary, products]);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
