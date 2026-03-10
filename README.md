@@ -71,15 +71,15 @@ Two built-in brand profiles (NovaPop and Iron & Oak Hardware) are pre-loaded wit
 
 | File | Purpose |
 |---|---|
-| `server/index.ts` | All Express routes, AI provider adapters, compliance engine, prompt builder, storage helpers |
-| `src/pages/Index.tsx` | Generation orchestration — iterates products × markets × languages × ratios, manages loading state, calls backend, persists manifest |
-| `src/components/CampaignBriefForm.tsx` | Campaign brief UI, brand profiles, per-product media library, brief upload/download |
-| `src/components/ResultsGallery.tsx` | Filterable gallery with brand / product / size / model filters and loading placeholders |
-| `src/components/SettingsModal.tsx` | API key and storage configuration (stored in `localStorage`) |
-| `src/lib/localSave.ts` | File System Access API — saves assets to a user-chosen folder organized by brand / campaign / product / size |
-| `src/lib/textOverlay.ts` | Canvas-based text compositing for Flux images with dynamic font sizing |
-| `shared/imageModels.ts` | Centralized model registry mapping display names → provider / request model / capability flags |
-| `src/types/campaign.ts` | TypeScript interfaces for `CampaignBrief`, `Product`, `Brand`, `VariantResult`, `GenerationManifest` |
+| [`server/index.ts`](https://github.com/jayrosen-design/creative-pipeline-ai/blob/main/server/index.ts) | All Express routes, AI provider adapters, compliance engine, prompt builder, storage helpers |
+| [`src/pages/Index.tsx`](https://github.com/jayrosen-design/creative-pipeline-ai/blob/main/src/pages/Index.tsx) | Generation orchestration — iterates products × markets × languages × ratios, manages loading state, calls backend, persists manifest |
+| [`src/components/CampaignBriefForm.tsx`](https://github.com/jayrosen-design/creative-pipeline-ai/blob/main/src/components/CampaignBriefForm.tsx) | Campaign brief UI, brand profiles, per-product media library, brief upload/download |
+| [`src/components/ResultsGallery.tsx`](https://github.com/jayrosen-design/creative-pipeline-ai/blob/main/src/components/ResultsGallery.tsx) | Filterable gallery with brand / product / size / model filters and loading placeholders |
+| [`src/components/SettingsModal.tsx`](https://github.com/jayrosen-design/creative-pipeline-ai/blob/main/src/components/SettingsModal.tsx) | API key and storage configuration (stored in `localStorage`) |
+| [`src/lib/localSave.ts`](https://github.com/jayrosen-design/creative-pipeline-ai/blob/main/src/lib/localSave.ts) | File System Access API — saves assets to a user-chosen folder organized by brand / campaign / product / size |
+| [`src/lib/textOverlay.ts`](https://github.com/jayrosen-design/creative-pipeline-ai/blob/main/src/lib/textOverlay.ts) | Canvas-based text compositing for Flux images with dynamic font sizing |
+| [`shared/imageModels.ts`](https://github.com/jayrosen-design/creative-pipeline-ai/blob/main/shared/imageModels.ts) | Centralized model registry mapping display names → provider / request model / capability flags |
+| [`src/types/campaign.ts`](https://github.com/jayrosen-design/creative-pipeline-ai/blob/main/src/types/campaign.ts) | TypeScript interfaces for `CampaignBrief`, `Product`, `Brand`, `VariantResult`, `GenerationManifest` |
 
 ---
 
@@ -88,6 +88,30 @@ Two built-in brand profiles (NovaPop and Iron & Oak Hardware) are pre-loaded wit
 ### Image Generation
 
 Three providers are available and user-selectable from the generation form. All providers receive the same structured prompt; the backend adapts request format, authentication, and response parsing per provider.
+
+#### How the image prompt is built (what we actually send to the model)
+
+The backend builds one **single prompt string** per variant in [`server/index.ts`](https://github.com/jayrosen-design/creative-pipeline-ai/blob/main/server/index.ts) (`buildPrompt()`), combining:
+
+- **Campaign inputs**: product name/tagline, audience, market, and optional language context
+- **Brand rules**: primary color accent, font mood hint, and optional logo safe-zone reservation
+- **Creative controls**: overlay text behavior and layout guidance based on the requested size (banner vs. vertical vs. square)
+
+If a product has reference images:
+
+- **GPT-Image / Gemini**: references are sent natively as images
+- **Flux**: references can’t be sent as images here, so the backend appends a “Reference guidance…” sentence to the prompt (prompt-only reference mode)
+
+**Example prompt (NovaPop, 728×90, with overlay text):**
+
+```text
+Create a premium branded campaign image for Cherry Fizz Can with the tagline "Pop the vibe.". Campaign objective: Hyper-realistic 3D render of a NovaPop Cherry Fizz can splashing into a pool of glowing pink liquid, cyberpunk background. Audience: Gen Z trend-setters in US. Style: polished commercial photography, campaign-ready, modern, high-end, visually striking, clean composition. Color palette: emphasize #e8368f as a core brand accent. Typography mood: visually compatible with Space Grotesk, but do not render exact branded typography. Leave clean negative space for overlay copy reading "Pop the vibe. NovaPop Cherry Fizz — Summer 2026", with strong readability and uncluttered background behind that text area. Reserve a logo-safe area of about 4% of the frame, but do not render or invent a logo. Compose for 728x90 framing (728x90) with a clear focal point and balanced hierarchy. Layout guidance: treat 728x90 as a true panoramic banner. Use the full horizontal canvas, keep the subject fully visible, avoid close-up crops, and leave balanced space across the width for ad copy. High detail, premium lighting, realistic materials, no clutter, no watermark, no distorted details, no fake text, no fake logos.
+```
+
+**Provider-specific difference for overlay text:**
+
+- **Flux**: the prompt asks the model to *leave negative space* for the overlay; the final text is applied after generation by the browser (Canvas overlay).
+- **GPT-Image / Gemini**: the prompt asks the model to *render the exact overlay text inside the image* (native text rendering).
 
 #### Flux.1 Dev
 
