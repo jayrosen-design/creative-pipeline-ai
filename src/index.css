@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 97%;
+    --foreground: 220 25% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 25% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 25% 10%;
+    --primary: 220 25% 10%;
+    --primary-foreground: 210 20% 97%;
+    --secondary: 215 20% 93%;
+    --secondary-foreground: 220 25% 10%;
+    --muted: 215 20% 93%;
+    --muted-foreground: 215 14% 46%;
+    --accent: 215 20% 93%;
+    --accent-foreground: 220 25% 10%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 20% 97%;
+    --border: 214 25% 89%;
+    --input: 214 25% 89%;
+    --ring: 220 25% 10%;
+    --radius: 0.625rem;
+
+    --brand-novapop-from: 330 81% 60%;
+    --brand-novapop-to: 187 72% 55%;
+    --brand-novapop-button: 330 65% 45%;
+    --brand-novapop-button-hover: 330 65% 40%;
+
+    --brand-ironoak-from: 25 85% 50%;
+    --brand-ironoak-to: 30 15% 40%;
+    --brand-ironoak-button: 25 80% 48%;
+    --brand-ironoak-button-hover: 25 80% 42%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222 30% 6%;
+    --foreground: 210 20% 95%;
+    --card: 222 25% 9%;
+    --card-foreground: 210 20% 95%;
+    --popover: 222 25% 9%;
+    --popover-foreground: 210 20% 95%;
+    --primary: 210 20% 95%;
+    --primary-foreground: 222 30% 6%;
+    --secondary: 217 25% 15%;
+    --secondary-foreground: 210 20% 95%;
+    --muted: 217 25% 15%;
+    --muted-foreground: 215 15% 55%;
+    --accent: 217 25% 15%;
+    --accent-foreground: 210 20% 95%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 20% 95%;
+    --border: 217 25% 15%;
+    --input: 217 25% 15%;
+    --ring: 212 27% 84%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
