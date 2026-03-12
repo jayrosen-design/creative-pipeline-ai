@@ -1,4 +1,7 @@
-![NovaPop 1:1 example output](local-assets/screenshots/nova-1-1.png)
+[![DOI](https://zenodo.org/badge/1177400800.svg)](https://doi.org/10.5281/zenodo.18985758)
+
+[![Watch the demo video](local-assets/screenshots/nova-1-1.png)](https://youtu.be/oKd5ig9DdBc)
+Watch the Demo Video
 
 # Creative Pipeline AI
 
